@@ -12,8 +12,12 @@ _init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv())
+
+DATABASE_NAME = os.getenv('DATABASE_NAME', 'score.sqlite3')
+logger.info('The database name is: ' + DATABASE_NAME)
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'score.sqlite3')
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, DATABASE_NAME)
 ENGINE = create_engine(SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False})
 
 Base = declarative_base()
