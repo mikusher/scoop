@@ -4,10 +4,12 @@
 
 # A function that prints
 # given number in words
+import logging
 
-from log_managment import create_logger
+from log_managment import _init_logger
 
-logger = create_logger('{}.log'.format(__name__))
+_init_logger('{}.log'.format(__name__), __name__)
+logger = logging.getLogger(__name__)
 
 
 def convert_to_words(num) -> str:

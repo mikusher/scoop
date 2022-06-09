@@ -1,3 +1,4 @@
+import logging
 import re
 import requests
 from bs4 import BeautifulSoup
@@ -6,8 +7,10 @@ from datetime import timedelta
 from typing import List, Dict
 from dotenv import load_dotenv, find_dotenv
 from converter_number import convert_to_words
-from log_managment import create_logger
-logger = create_logger('{}.log'.format(__name__))
+from log_managment import _init_logger
+
+_init_logger('{}.log'.format(__name__), __name__)
+logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv())
 

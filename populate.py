@@ -1,3 +1,4 @@
+import logging
 from datetime import date, timedelta, datetime
 
 from dotenv import load_dotenv, find_dotenv
@@ -5,8 +6,10 @@ from dotenv import load_dotenv, find_dotenv
 from coll_conf import CollectionsSatellite
 from database import create_session
 from models import EuroAll, GameDate, WinResults
-from log_managment import create_logger
-logger = create_logger('{}.log'.format(__name__))
+from log_managment import _init_logger
+
+_init_logger('{}.log'.format(__name__), __name__)
+logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv())
 
@@ -22,11 +25,11 @@ def get_last_insert_day() -> date:
             last_day = date(pre_last_day.year, pre_last_day.month, pre_last_day.day)
         session.close()
     except (Exception,) as error:
-        print(error)
+        logger.error(error)
     finally:
         if conn is not None:
             conn.close()
-            print('Database connection closed.')
+            logger.info('Database connection closed, for get last day in DB.')
     return last_day
 
 
@@ -40,11 +43,11 @@ def day_exist_in_db(_day) -> bool:
             check = True
         session.close()
     except (Exception,) as error:
-        print(error)
+        logger.error(error)
     finally:
         if session is not None:
             session.close()
-            print('Database connection closed.')
+            logger.info('Database connection closed, for check day {}'.format(_day))
     return check
 
 
@@ -80,7 +83,7 @@ def add_number(balls, stars, day, million, winners):
         win_results.game_date_id = game_to_get.id
         # check if winner is None or empty
         if len(winners) == 0:
-            print('winners data is empty')
+            logger.info('No winner')
         else:
             win_results.five_two_winners = winners.get('five_two', 0)[1]
             win_results.five_two_money = winners.get('five_two', 0)[0]
@@ -112,13 +115,13 @@ def add_number(balls, stars, day, million, winners):
         session.close()
 
     except Exception as e:
-        print("Error inserting data for day {0}\nError: {1}".format(day, e))
+        logger.error("Error inserting data for day {0}\nError: {1}".format(day, e))
         session.rollback()
         session.close()
     finally:
         if session is not None:
             session.close()
-            print('Database connection closed.')
+            logger.info('Database connection closed, for day {}'.format(day))
 
 
 def get_euro_number():
@@ -139,8 +142,7 @@ def get_euro_number():
                 star = balls_and_star['stars']
                 million = balls_and_star['m1lhao']
                 winners = balls_and_star['winners']
-                print(winners)
                 day = _day
-                print("Inserting data {0} {1} {2} {3} for date {4}\n".format(balls, star, million, winners, day))
+                logger.info('Day:{0} Balls:{1} Star:{2} Million:{3} Winners:{4}'.format(day, balls, star, million, winners))
                 # add number to database
                 add_number(balls, star, day, million, winners)

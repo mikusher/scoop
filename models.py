@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 from sqlalchemy import (
@@ -13,8 +14,10 @@ from wheel.util import as_unicode
 
 import constants
 from database import Base
-from log_managment import create_logger
-logger = create_logger('{}.log'.format(__name__))
+from log_managment import _init_logger
+
+_init_logger('{}.log'.format(__name__), __name__)
+logger = logging.getLogger(__name__)
 
 
 class GameDate(Base):
