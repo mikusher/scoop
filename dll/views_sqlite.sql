@@ -21,7 +21,7 @@ SELECT
 	win_results.four_two_winners,
 	win_results.four_two_money,
 	win_results.four_one_winners,
-	win_results.four_one_winners,
+	win_results.four_one_money,
 	win_results.four_winners,
 	win_results.four_money,
 	win_results.three_two_winners,

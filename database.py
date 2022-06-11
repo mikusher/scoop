@@ -1,7 +1,8 @@
 import logging
 import os
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select, text
+from sqlalchemy_utils import database_exists, create_database, create_view
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv, find_dotenv
@@ -14,8 +15,9 @@ logger = logging.getLogger(__name__)
 load_dotenv(find_dotenv())
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-# get environment boolean variables from .env file PRODUCTION
 
+
+# get environment boolean variables from .env file PRODUCTION
 PRODUCTION = os.getenv('PRODUCTION', 'False').lower() in ('true', '1', 't')
 if PRODUCTION:
     DATABASE_DIALECT = os.getenv("DATABASE_DIALECT")
@@ -34,35 +36,49 @@ if PRODUCTION:
         DATABASE_DB_EX,
     )
     # production
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_DEV',  EXTERNAL_SQLALCHEMY_DATABASE_URI)
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_DEV', EXTERNAL_SQLALCHEMY_DATABASE_URI)
     logger.info('The database uri is: ' + SQLALCHEMY_DATABASE_URI)
-    ENGINE = create_engine(SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False})
+    engine = create_engine(SQLALCHEMY_DATABASE_URI)
 else:
     # development
     DATABASE_NAME = os.getenv('DATABASE_NAME', 'satellite').strip()
     logger.info('The database name is: ' + DATABASE_NAME)
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_PROD', 'sqlite:///' + os.path.join(BASE_DIR, '{}.db'.format(DATABASE_NAME)))
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_PROD',
+                                        'sqlite:///' + os.path.join(BASE_DIR, '{}.db'.format(DATABASE_NAME)))
     logger.info('The database uri is: ' + SQLALCHEMY_DATABASE_URI)
-    ENGINE = create_engine(SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False})
+    engine = create_engine(SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False})
 
+
+# create a base class for declarative class definitions
 Base = declarative_base()
 
 
 def prepare_database():
     logger.info('Creating database')
-    Base.metadata.create_all(bind=ENGINE, checkfirst=True)
+    if not database_exists(engine.url):
+        create_database(engine.url)
+    else:
+        # Connect the database if exists.
+        engine.connect()
+    logger.info('Database created')
+    logger.info('Creating tables')
+    Base.metadata.create_all(bind=engine, checkfirst=True)
+
     # create a view to see the number of rows in the table
     logger.info('Creating view')
-    # get the view file
+
+    # get the view folder and the view file
     dll_folder = os.path.join(BASE_DIR, 'dll')
-    view_file = os.path.join(dll_folder, 'views.sql')
+    view_file = os.path.join(dll_folder, 'views_postgres.sql') if PRODUCTION else os.path.join(dll_folder, 'views_sqlite.sql')
     # read the view file
     with open(view_file, 'r') as f:
         view_sql = f.read()
     # execute the view
     logger.info('Executing view')
-    ENGINE.execute(view_sql)
-    logger.info('View created')
+    with engine.connect().execution_options(autocommit=True) as conn:
+        conn.execute(text(view_sql))
+        logger.info('View created')
+        conn.close()
     logger.info('Database created')
     return
 
@@ -73,7 +89,6 @@ def create_session() -> sessionmaker:
     logger.info('Creating engine')
     sqlalchemy_uri = SQLALCHEMY_DATABASE_URI
     logger.info('Creating engine with uri: ' + sqlalchemy_uri)
-    engine = ENGINE
     logger.info('Engine created')
     # create a configured "Session" class
     Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
