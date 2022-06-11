@@ -146,3 +146,4 @@ def get_euro_number():
                 logger.info('Day:{0} Balls:{1} Star:{2} Million:{3} Winners:{4}'.format(day, balls, star, million, winners))
                 # add number to database
                 add_number(balls, star, day, million, winners)
+                print('Day:{0} Balls:{1} Star:{2} Million:{3} Winners:{4}'.format(day, balls, star, million, winners))
