@@ -13,12 +13,37 @@ logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv())
 
-DATABASE_NAME = os.getenv('DATABASE_NAME', 'score.db')
-logger.info('The database name is: ' + DATABASE_NAME)
-
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, DATABASE_NAME)
-ENGINE = create_engine(SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False})
+# get environment boolean variables from .env file PRODUCTION
+
+PRODUCTION = os.getenv('PRODUCTION', 'False').lower() in ('true', '1', 't')
+if PRODUCTION:
+    DATABASE_DIALECT = os.getenv("DATABASE_DIALECT")
+    DATABASE_USER = os.getenv("DATABASE_USER")
+    DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
+    DATABASE_HOST = os.getenv("DATABASE_HOST")
+    DATABASE_PORT = os.getenv("DATABASE_PORT")
+    DATABASE_DB_EX = os.getenv("DATABASE_DB_EX")
+
+    EXTERNAL_SQLALCHEMY_DATABASE_URI = "%s://%s:%s@%s:%s/%s" % (
+        DATABASE_DIALECT,
+        DATABASE_USER,
+        DATABASE_PASSWORD,
+        DATABASE_HOST,
+        DATABASE_PORT,
+        DATABASE_DB_EX,
+    )
+    # production
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_DEV',  EXTERNAL_SQLALCHEMY_DATABASE_URI)
+    logger.info('The database uri is: ' + SQLALCHEMY_DATABASE_URI)
+    ENGINE = create_engine(SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False})
+else:
+    # development
+    DATABASE_NAME = os.getenv('DATABASE_NAME', 'satellite').strip()
+    logger.info('The database name is: ' + DATABASE_NAME)
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_PROD', 'sqlite:///' + os.path.join(BASE_DIR, '{}.db'.format(DATABASE_NAME)))
+    logger.info('The database uri is: ' + SQLALCHEMY_DATABASE_URI)
+    ENGINE = create_engine(SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False})
 
 Base = declarative_base()
 
