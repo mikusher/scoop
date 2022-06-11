@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv())
 
-DATABASE_NAME = os.getenv('DATABASE_NAME', 'score.sqlite3')
+DATABASE_NAME = os.getenv('DATABASE_NAME', 'score.db')
 logger.info('The database name is: ' + DATABASE_NAME)
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
