@@ -14,7 +14,7 @@ else
     fi
 fi
 
-source virtualenv/bin/activate
+. virtualenv/bin/activate
 if [ $? -eq 0 ]; then
     echo "Virtual environment is successfully activated."
 else
