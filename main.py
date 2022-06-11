@@ -8,6 +8,7 @@ from log_managment import _init_logger
 
 _init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
+debug_log = logging.getLogger(__name__)
 
 # Using the special variable
 # __name__
