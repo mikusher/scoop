@@ -9,7 +9,7 @@ LOGS_FOLDER = os.path.join(BASE_DIR, 'logs')
 # create a public function for manage logging
 def _init_logger(log_file, app_name):
     log_file = os.path.join(LOGS_FOLDER, log_file)
-    # create a file handler if the log file does not exist
+    # create a file handler if not exists
     if not os.path.exists(log_file):
         with open(log_file, 'w') as f:
             f.write('')
