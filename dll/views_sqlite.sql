@@ -40,3 +40,14 @@ FROM
 	euro_game_day
 INNER JOIN euro_all ON euro_all.game_date_id = euro_game_day.id
 INNER JOIN win_results ON win_results.game_date_id = euro_game_day.id;
+
+
+
+CREATE VIEW IF NOT EXISTS concat_all
+AS
+SELECT
+    game_date,
+    CONCAT(ball_week_1, ' ', ball_week_2, ' ', ball_week_3, ' ', ball_week_4, ' ', ball_week_5) AS "Numbers",
+    CONCAT(star_week_1, ' ', star_week_2) AS "Stars"
+FROM euro_all_info
+ORDER BY game_date DESC;
