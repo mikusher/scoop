@@ -50,3 +50,24 @@ SELECT
     CONCAT(star_week_1, ' ', star_week_2) AS "Stars"
 FROM euro_all_info
 ORDER BY game_date DESC;
+
+-- Note: Unless you save your query, these tabs will NOT persist if you clear your cookies or change browsers.
+
+CREATE OR replace  VIEW view_all_content
+AS
+SELECT
+    euro_game_day.game_date,
+    euro_all.ball_week_1 as "num_one",
+    euro_all.ball_week_2 as "num_two",
+    euro_all.ball_week_3 as "num_tre",
+    euro_all.ball_week_4 as "num_fou",
+    euro_all.ball_week_5 as "num_fiv",
+    euro_all.star_week_1 as "str_one",
+    euro_all.star_week_2 as "str_two",
+    euro_star_numbers.euro_numbers as "collect_numbers",
+    euro_star_numbers.star_numbers as "collect_stars",
+    euro_all.million
+FROM euro_star_numbers
+    INNER JOIN euro_all ON euro_all.game_date_id = euro_star_numbers.game_date_id
+    INNER JOIN euro_game_day ON euro_game_day.id = euro_star_numbers.game_date_id
+ORDER BY euro_game_day.game_date DESC;
