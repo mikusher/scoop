@@ -5,7 +5,7 @@ from dotenv import load_dotenv, find_dotenv
 
 from coll_conf import CollectionsSatellite
 from database import create_session
-from models import EuroAll, GameDate, WinResults
+from models import EuroAll, GameDate, WinResults, EuroStarNumbers
 from log_managment import _init_logger
 
 _init_logger('{}.log'.format(__name__), __name__)
@@ -51,7 +51,13 @@ def day_exist_in_db(_day) -> bool:
     return check
 
 
-def add_number(balls, stars, day, million, winners):
+def add_number(balls_and_star, _day):
+    """Add number to database."""
+    balls = balls_and_star['balls']
+    stars = balls_and_star['stars']
+    million = balls_and_star['m1lhao']
+    winners = balls_and_star['winners']
+    day = _day
     try:
         session = create_session()
         # game_date
@@ -64,6 +70,13 @@ def add_number(balls, stars, day, million, winners):
 
         # game_date_id
         game_to_get = session.query(GameDate).filter(GameDate.game_date == day).first()
+        
+        eurostarnumbers = EuroStarNumbers()
+        eurostarnumbers.game_date_id = game_to_get.id
+        eurostarnumbers.euro_numbers = balls
+        eurostarnumbers.star_numbers = stars
+        session.add(eurostarnumbers)
+        session.commit()
 
         # EuroAll
         euro_all = EuroAll()
@@ -113,7 +126,7 @@ def add_number(balls, stars, day, million, winners):
         session.commit()
 
         session.close()
-
+        logger.info('Day:{0} Balls:{1} Star:{2} Million:{3} Winners:{4}'.format(day, balls, stars, million, winners))
     except Exception as e:
         logger.error("Error inserting data for day {0}\nError: {1}".format(day, e))
         session.rollback()
@@ -138,12 +151,6 @@ def get_euro_number():
             day_in_db = day_exist_in_db(_day)
             if day_in_db:
                 balls_and_star = CollectionsSatellite.check_numbers(_day, page)
-                balls = balls_and_star['balls']
-                star = balls_and_star['stars']
-                million = balls_and_star['m1lhao']
-                winners = balls_and_star['winners']
-                day = _day
-                logger.info('Day:{0} Balls:{1} Star:{2} Million:{3} Winners:{4}'.format(day, balls, star, million, winners))
                 # add number to database
-                add_number(balls, star, day, million, winners)
-                print('Day:{0} Balls:{1} Star:{2} Million:{3} Winners:{4}'.format(day, balls, star, million, winners))
+                add_number(balls_and_star, _day)
+                logger.info('Added number for day {}'.format(_day))
