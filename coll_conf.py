@@ -30,7 +30,7 @@ def get_data_range(start_date, end_date):
 class CollectionsSatellite:
 
     @staticmethod
-    def is_valid_day(day_check) -> requests:
+    def is_valid_day(day_check, loop) -> requests:
         """
         Check if the day is valid.
         :param day_check:
@@ -42,6 +42,8 @@ class CollectionsSatellite:
         # Requests the numbers to URL and returns raw HTML
         page = requests.get(base_url, headers=HEADERS)
         logger.info('Requesting the page')
+        if page.status_code == 404:
+            loop.update(1)
         return page
 
     @staticmethod

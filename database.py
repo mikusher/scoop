@@ -6,6 +6,7 @@ from sqlalchemy_utils import database_exists, create_database, create_view
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv, find_dotenv
+from tqdm import tqdm
 
 from log_managment import _init_logger
 
@@ -54,7 +55,10 @@ Base = declarative_base()
 
 
 def prepare_database():
+    loop = tqdm(total=7, unit='%', position=0, leave=True)
     logger.info('Creating database')
+    loop.set_description('Creating database'.format(1))
+    loop.update(1)
     if not database_exists(engine.url):
         create_database(engine.url)
     else:
@@ -62,24 +66,38 @@ def prepare_database():
         engine.connect()
     logger.info('Database created')
     logger.info('Creating tables')
+    loop.set_description('Creating tables'.format(2))
+    loop.update(1)
     Base.metadata.create_all(bind=engine, checkfirst=True)
-
+    loop.set_description('Creating tables'.format(3))
+    loop.update(1)
     # create a view to see the number of rows in the table
     logger.info('Creating view')
 
     # get the view folder and the view file
+    loop.set_description('Creating view'.format(4))
+    loop.update(1)
     dll_folder = os.path.join(BASE_DIR, 'dll')
     view_file = os.path.join(dll_folder, 'views_postgres.sql') if PRODUCTION else os.path.join(dll_folder, 'views_sqlite.sql')
+    loop.set_description('Creating view'.format(5))
+    loop.update(1)
     # read the view file
     with open(view_file, 'r') as f:
         view_sql = f.read()
     # execute the view
     logger.info('Executing view')
+    loop.set_description('Executing view'.format(6))
+    loop.update(1)
     with engine.connect().execution_options(autocommit=True) as conn:
         conn.execute(text(view_sql))
+        loop.set_description('Executing view'.format(7))
+        loop.update(1)
         logger.info('View created')
         conn.close()
     logger.info('Database created')
+    loop.set_description('Database created')
+    loop.update(1)
+    loop.close()
     return
 
 

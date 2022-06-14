@@ -2,6 +2,7 @@ import logging
 from datetime import date, timedelta, datetime
 
 from dotenv import load_dotenv, find_dotenv
+from tqdm import tqdm
 
 from coll_conf import CollectionsSatellite
 from database import create_session
@@ -31,6 +32,23 @@ def get_last_insert_day() -> date:
             conn.close()
             logger.info('Database connection closed, for get last day in DB.')
     return last_day
+
+
+# get total number of days in GameDate table
+def get_total_days() -> int:
+    session = None
+    total_days = 0
+    try:
+        session = create_session()
+        total_days = session.query(GameDate).count()
+        session.close()
+    except (Exception,) as error:
+        logger.error(error)
+    finally:
+        if session is not None:
+            session.close()
+            logger.info('Database connection closed, for get total days in DB.')
+    return total_days
 
 
 def day_exist_in_db(_day) -> bool:
@@ -70,7 +88,7 @@ def add_number(balls_and_star, _day):
 
         # game_date_id
         game_to_get = session.query(GameDate).filter(GameDate.game_date == day).first()
-        
+
         eurostarnumbers = EuroStarNumbers()
         eurostarnumbers.game_date_id = game_to_get.id
         eurostarnumbers.euro_numbers = balls
@@ -145,8 +163,10 @@ def get_euro_number():
     today = date.today()
     end_day = date(today.year, today.month, today.day)
     days_to_check = CollectionsSatellite.draws_days(start_day, end_day)
+    loop = tqdm(total=len(days_to_check), unit='%', position=0, leave=True)
     for _day in days_to_check:
-        page = CollectionsSatellite.is_valid_day(_day)
+        loop.set_description('Check day: {}'.format(_day))
+        page = CollectionsSatellite.is_valid_day(_day, loop)
         if page.status_code != 404 and page.ok:
             day_in_db = day_exist_in_db(_day)
             if day_in_db:
@@ -154,3 +174,4 @@ def get_euro_number():
                 # add number to database
                 add_number(balls_and_star, _day)
                 logger.info('Added number for day {}'.format(_day))
+                loop.update(1)
