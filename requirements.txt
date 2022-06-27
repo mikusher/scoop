@@ -11,6 +11,7 @@ greenlet==1.1.2
 hijri-converter==2.2.4
 holidays==0.14.2
 idna==3.3
+joblib==1.1.0
 kiwisolver==1.4.3
 korean-lunar-calendar==0.2.1
 LunarCalendar==0.0.9
@@ -29,6 +30,8 @@ python-dateutil==2.8.2
 python-dotenv==0.20.0
 pytz==2022.1
 requests==2.27.1
+scikit-learn==1.1.1
+scipy==1.8.1
 setuptools-git==1.2
 six==1.16.0
 soupsieve==2.3.2.post1
@@ -36,6 +39,7 @@ SQLAlchemy==1.4.36
 SQLAlchemy-Utils==0.38.2
 sqlalchemy2-stubs==0.0.2a22
 sqlmodel==0.0.6
+threadpoolctl==3.1.0
 tqdm==4.64.0
 typing-extensions==4.2.0
 ujson==5.3.0
