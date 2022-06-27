@@ -1,5 +1,8 @@
 import logging
+import random
 import re
+import time
+
 import requests
 from bs4 import BeautifulSoup
 from utils.constants import HEADERS, GLOBAL_URL
@@ -27,6 +30,11 @@ def get_data_range(start_date, end_date):
         yield start_date + timedelta(n)
 
 
+def delay() -> None:
+    time.sleep(random.uniform(3, 6))
+    return None
+
+
 class CollectionsSatellite:
 
     @staticmethod
@@ -40,6 +48,7 @@ class CollectionsSatellite:
         base_url = '{0}/{1}#PrizePT'.format(GLOBAL_URL, day_check)
         logger.info('Base url: {}'.format(base_url))
         # Requests the numbers to URL and returns raw HTML
+        delay()
         page = requests.get(base_url, headers=HEADERS)
         logger.info('Requesting the page')
         if page.status_code == 404:
