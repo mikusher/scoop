@@ -1,16 +1,16 @@
 import logging
 import os
 
-from sqlalchemy import create_engine, select, text
-from sqlalchemy_utils import database_exists, create_database, create_view
+from sqlalchemy import create_engine, text
+from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv, find_dotenv
 from tqdm import tqdm
 
-from log_managment import _init_logger
+from utils.log_managment import init_logger
 
-_init_logger('{}.log'.format(__name__), __name__)
+init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv())
@@ -77,7 +77,7 @@ def prepare_database():
     # get the view folder and the view file
     loop.set_description('Creating view'.format(4))
     loop.update(1)
-    dll_folder = os.path.join(BASE_DIR, 'dll')
+    dll_folder = os.path.join(BASE_DIR, '../dll')
     view_file = os.path.join(dll_folder, 'views_postgres.sql') if PRODUCTION else os.path.join(dll_folder, 'views_sqlite.sql')
     loop.set_description('Creating view'.format(5))
     loop.update(1)

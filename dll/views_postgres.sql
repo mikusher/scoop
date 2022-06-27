@@ -71,3 +71,15 @@ FROM euro_star_numbers
     INNER JOIN euro_all ON euro_all.game_date_id = euro_star_numbers.game_date_id
     INNER JOIN euro_game_day ON euro_game_day.id = euro_star_numbers.game_date_id
 ORDER BY euro_game_day.game_date DESC;
+
+
+CREATE OR replace  VIEW view_union_number_star
+AS
+SELECT
+    euro_game_day.game_date,
+    unums.numbers as "numbers",
+    union_star.stars as "stars"
+FROM union_number unums
+    INNER JOIN euro_game_day ON euro_game_day.id = unums.game_date_id
+    INNER JOIN union_star ON euro_game_day.id = union_star.game_date_id
+ORDER BY euro_game_day.game_date DESC;

@@ -3,9 +3,9 @@
 # A function that prints given number in words
 import logging
 
-from log_managment import _init_logger
+from utils.log_managment import init_logger
 
-_init_logger('{}.log'.format(__name__), __name__)
+init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
 
 

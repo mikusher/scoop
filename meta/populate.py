@@ -4,12 +4,12 @@ from datetime import date, timedelta, datetime
 from dotenv import load_dotenv, find_dotenv
 from tqdm import tqdm
 
-from coll_conf import CollectionsSatellite
-from database import create_session
-from models import EuroAll, GameDate, WinResults, EuroStarNumbers
-from log_managment import _init_logger
+from conf.coll_conf import CollectionsSatellite
+from controller.database import create_session
+from meta.models import EuroAll, GameDate, WinResults, EuroStarNumbers, UnionNumbers, UnionStars
+from utils.log_managment import init_logger
 
-_init_logger('{}.log'.format(__name__), __name__)
+init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv())
@@ -143,6 +143,20 @@ def add_number(balls_and_star, _day):
         session.add(win_results)
         session.commit()
 
+        for ball in balls:
+            unNumbers = UnionNumbers()
+            unNumbers.game_date_id = game_to_get.id
+            unNumbers.numbers = int(ball)
+            session.add(unNumbers)
+            session.commit()
+
+        for star in stars:
+            unStars = UnionStars()
+            unStars.game_date_id = game_to_get.id
+            unStars.stars = int(star)
+            session.add(unStars)
+            session.commit()
+
         session.close()
         logger.info('Day:{0} Balls:{1} Star:{2} Million:{3} Winners:{4}'.format(day, balls, stars, million, winners))
     except Exception as e:
@@ -175,3 +189,6 @@ def get_euro_number():
                 add_number(balls_and_star, _day)
                 logger.info('Added number for day {}'.format(_day))
                 loop.update(1)
+
+    loop.set_description('Done')
+    loop.close()

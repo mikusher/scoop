@@ -3,13 +3,13 @@ import logging
 import sys
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-LOGS_FOLDER = os.path.join(BASE_DIR, 'logs')
+LOGS_FOLDER = os.path.join(BASE_DIR, '../logs')
 if not os.path.exists(LOGS_FOLDER):
     os.makedirs(LOGS_FOLDER)
 
 
 # create a public function for manage logging
-def _init_logger(log_file, app_name):
+def init_logger(log_file, app_name):
     log_file = os.path.join(LOGS_FOLDER, log_file)
     # create a file handler if not exists
     if not os.path.exists(log_file):

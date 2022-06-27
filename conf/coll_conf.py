@@ -2,14 +2,14 @@ import logging
 import re
 import requests
 from bs4 import BeautifulSoup
-from constants import HEADERS, GLOBAL_URL
+from utils.constants import HEADERS, GLOBAL_URL
 from datetime import timedelta
 from typing import List, Dict
 from dotenv import load_dotenv, find_dotenv
-from converter_number import convert_to_words
-from log_managment import _init_logger
+from utils.converter_number import convert_to_words
+from utils.log_managment import init_logger
 
-_init_logger('{}.log'.format(__name__), __name__)
+init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
 
 load_dotenv(find_dotenv())
