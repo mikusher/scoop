@@ -21,7 +21,6 @@ from datetime import datetime
 
 from controller.database import prepare_database
 from meta.populate import get_euro_number
-from neural.network import brain_machine, neural
 from utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
