@@ -76,3 +76,27 @@ def convert_to_words(num) -> str:
                 if ord(num[x]) - 48 != 0:
                     return single_digits[ord(num[x]) - 48]
         x += 1
+
+
+"""
+from itertools import permutations 
+  
+# Get all of the permutations of [2, 4, 6] 
+perm_ = permutations([2, 4, 6]) 
+  
+# Print all of the the permutations 
+for i in list(perm_): 
+    print(i) 
+
+# A Python program that prints all
+# combinations of given length 
+from itertools import combinations 
+  
+# Get all combinations of [2, 4, 6] 
+# with a length of length 2 
+comb_ = combinations([2, 4, 6] , 2) 
+  
+# Print all of the combinations 
+for i in list(comb_): 
+    print(i)
+"""

@@ -1,11 +1,15 @@
 import os
 
 from dotenv import load_dotenv, find_dotenv
+from fake_headers import Headers
+
 load_dotenv(find_dotenv())
 
 GLOBAL_URL = 'https://www.euro-millions.com/results'
 
 # headers for requests
+header = Headers(browser="chrome", os="win", headers=True)
+
 HEADERS = {
     "undefinedaccept": 'application/json',
     "accept-encoding": 'gzip, deflate, br',
@@ -27,7 +31,6 @@ TABLE_NAME_WIN_RESULTS = 'win_results'
 TABLE_NAME_EURO_STAR_NUMBERS = 'euro_star_numbers'
 TABLE_UNION_NUMBER = 'union_number'
 TABLE_UNION_STAR = 'union_star'
-
 
 SQL_SELECT_DAYS = "select * from euro_all where play_day = \'{0}\' ORDER BY ROWID ASC LIMIT 1"
 INSERT_EURO_NUMBERS = "insert into euro_all (ball_1, ball_2, ball_3, ball_4, ball_5, star_1, star_2, play_day) values({0}, {1}, {2}, {3}, {4}, {5}, {6}, '{7}')"

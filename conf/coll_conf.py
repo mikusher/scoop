@@ -2,10 +2,11 @@ import logging
 import random
 import re
 import time
+from fake_useragent import UserAgent
 
 import requests
 from bs4 import BeautifulSoup
-from utils.constants import HEADERS, GLOBAL_URL
+from utils.constants import HEADERS, GLOBAL_URL, header
 from datetime import timedelta
 from typing import List, Dict
 from dotenv import load_dotenv, find_dotenv
@@ -31,7 +32,7 @@ def get_data_range(start_date, end_date):
 
 
 def delay() -> None:
-    time.sleep(random.uniform(3, 6))
+    time.sleep(random.uniform(1, 1))
     return None
 
 
@@ -49,7 +50,8 @@ class CollectionsSatellite:
         logger.info('Base url: {}'.format(base_url))
         # Requests the numbers to URL and returns raw HTML
         delay()
-        page = requests.get(base_url, headers=HEADERS)
+        random_header = header.generate()
+        page = requests.get(base_url, headers=random_header)
         logger.info('Requesting the page')
         if page.status_code == 404:
             loop.update(1)
@@ -88,7 +90,7 @@ class CollectionsSatellite:
             "winners": {}
         }
         # ballsAscending or ballsDrawn
-        soup = BeautifulSoup(page.content, 'html.parser')
+        soup = BeautifulSoup(page, 'html.parser')
 
         # find balls
         get_balls = soup.find("div", {"id": "ballsAscending"}).findAll(attrs="ball")

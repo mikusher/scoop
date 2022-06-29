@@ -184,7 +184,7 @@ def get_euro_number():
         if page.status_code != 404 and page.ok:
             day_in_db = day_exist_in_db(_day)
             if day_in_db:
-                balls_and_star = CollectionsSatellite.check_numbers(_day, page)
+                balls_and_star = CollectionsSatellite.check_numbers(_day, page.content)
                 # add number to database
                 add_number(balls_and_star, _day)
                 logger.info('Added number for day {}'.format(_day))
