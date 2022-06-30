@@ -1,0 +1,52 @@
+
+version: "3.7"
+
+services:
+    app:
+        build: .
+        env_file: etl/docker/.env-non-dev
+        command: ["python", "./main.py", "app"]
+        restart: always
+        volumes:
+            - ./:/app
+        depends_on:
+            - "db"
+            - "redis"
+            - "pgadmin"
+    redis:
+        image: redis:latest
+        container_name: redis_cache
+        restart: unless-stopped
+        ports:
+            - "127.0.0.1:6379:6379"
+        volumes:
+            - redis:/data
+    db:
+        image: postgres:10
+        container_name: postgres_database
+        env_file: etl/docker/.env-non-dev
+        command: postgres -c config_file=/etc/postgresql/postgresql.conf
+        ports:
+            - "5432:5432"
+        restart: always
+        volumes:
+            - database-data:/var/lib/postgresql/data/
+            - ./etl/docker/postgresqlconfig/postgresql.conf:/etc/postgresql/postgresql.conf
+
+    pgadmin:
+        image: dpage/pgadmin4
+        env_file: etl/docker/.env-non-dev
+        ports:
+            - '5050:80'
+        restart: always
+        depends_on:
+            -   "db"
+        volumes:
+            - pgadmin:/root/.pgadmin
+volumes:
+    database-data:
+        external: false
+    pgadmin:
+        external: false
+    redis:
+        external: false

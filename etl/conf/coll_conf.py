@@ -2,16 +2,15 @@ import logging
 import random
 import re
 import time
-from fake_useragent import UserAgent
 
 import requests
 from bs4 import BeautifulSoup
-from utils.constants import HEADERS, GLOBAL_URL, header
+from etl.utils.constants import GLOBAL_URL, header
 from datetime import timedelta
 from typing import List, Dict
 from dotenv import load_dotenv, find_dotenv
-from utils.converter_number import convert_to_words
-from utils.log_managment import init_logger
+from etl.utils.converter_number import convert_to_words
+from etl.utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)

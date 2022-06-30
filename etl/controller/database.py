@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv, find_dotenv
 from tqdm import tqdm
 
-from utils.log_managment import init_logger
+from etl.utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
@@ -22,8 +22,8 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PRODUCTION = os.getenv('PRODUCTION', 'False').lower() in ('true', '1', 't')
 if PRODUCTION:
     DATABASE_DIALECT = os.getenv("DATABASE_DIALECT")
-    DATABASE_USER = os.getenv("DATABASE_USER")
-    DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
+    DATABASE_USER = os.getenv("POSTGRES_USER")
+    DATABASE_PASSWORD = os.getenv("POSTGRES_PASSWORD")
     DATABASE_HOST = os.getenv("DATABASE_HOST")
     DATABASE_PORT = os.getenv("DATABASE_PORT")
     DATABASE_DB_EX = os.getenv("DATABASE_DB_EX")

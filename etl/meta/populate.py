@@ -4,10 +4,10 @@ from datetime import date, timedelta, datetime
 from dotenv import load_dotenv, find_dotenv
 from tqdm import tqdm
 
-from conf.coll_conf import CollectionsSatellite
-from controller.database import create_session
-from meta.models import EuroAll, GameDate, WinResults, EuroStarNumbers, UnionNumbers, UnionStars
-from utils.log_managment import init_logger
+from etl.conf.coll_conf import CollectionsSatellite
+from etl.controller.database import create_session
+from etl.meta.models import EuroAll, GameDate, WinResults, EuroStarNumbers, UnionNumbers, UnionStars
+from etl.utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)

@@ -1,5 +1,5 @@
 """
-Get million data and save to database.
+Get euro million data and save to database.
 Training data is saved to database.
 Prediction data is saved to database.
 
@@ -7,8 +7,8 @@ Example: .env file:
 ------------------------------------------------------
 PRODUCTION=True
 DATABASE_DIALECT=postgresql
-DATABASE_USER=miky.mikusher
-DATABASE_PASSWORD=mikusher.19
+POSTGRES_USER=miky.mikusher
+POSTGRES_PASSWORD=mikusher.19
 DATABASE_HOST=localhost
 DATABASE_PORT=5433
 DATABASE_DB_EX=satellite
@@ -19,9 +19,9 @@ DATABASE_DB_EX=satellite
 import logging
 from datetime import datetime
 
-from controller.database import prepare_database
-from meta.populate import get_euro_number
-from utils.log_managment import init_logger
+from etl.controller.database import prepare_database
+from etl.meta.populate import get_euro_number
+from etl.utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
