@@ -1,8 +1,8 @@
 
+ARG PY_VER=3.7.13
+FROM python:${PY_VER} AS etl-py
 MAINTAINER Luis Amilcar Tavares <mikusher@hotmail.com>
 
-ARG PY_VER=3.8.12
-FROM python:${PY_VER} AS etl-py
 
 RUN mkdir /app \
         && apt-get update -y \
@@ -12,13 +12,15 @@ RUN mkdir /app \
             libpq-dev \
             libsasl2-dev \
             libecpg-dev \
-            cron
-
-RUN pip install --upgrade pip
+            cron \
+    && pip install --upgrade pip
 
 WORKDIR /app
 
-COPY . .
+RUN mkdir -p /app/etl/
+
+COPY etl/ /app/etl/
+COPY main.py /app/main.py
 
 RUN cd /app \
     && pip install --no-cache -r /app/etl/requirements.txt

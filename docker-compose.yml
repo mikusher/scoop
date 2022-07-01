@@ -3,8 +3,11 @@ version: "3.7"
 
 services:
     app:
-        build: .
+        build:
+            context: .
+            dockerfile: ./Dockerfile
         env_file: etl/docker/.env-non-dev
+        container_name: etl_app
         command: ["python", "./main.py", "app"]
         restart: always
         volumes:
@@ -15,7 +18,7 @@ services:
             - "pgadmin"
     redis:
         image: redis:latest
-        container_name: redis_cache
+        container_name: etl_redis
         restart: unless-stopped
         ports:
             - "127.0.0.1:6379:6379"
@@ -23,18 +26,20 @@ services:
             - redis:/data
     db:
         image: postgres:10
-        container_name: postgres_database
+        container_name: etl_db
         env_file: etl/docker/.env-non-dev
-        command: postgres -c config_file=/etc/postgresql/postgresql.conf
+        command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf", "-c", "hba_file=/etc/postgresql/pg_hba.conf"]
         ports:
             - "5432:5432"
         restart: always
         volumes:
             - database-data:/var/lib/postgresql/data/
             - ./etl/docker/postgresqlconfig/postgresql.conf:/etc/postgresql/postgresql.conf
+            - ./etl/docker/postgresqlconfig/pg_hba.conf:/etc/postgresql/pg_hba.conf
 
     pgadmin:
         image: dpage/pgadmin4
+        container_name: etl_pgadmin
         env_file: etl/docker/.env-non-dev
         ports:
             - '5050:80'
