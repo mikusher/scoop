@@ -8,3 +8,4 @@ requests==2.28.1
 bs4
 tqdm
 fake_headers
+wheel
