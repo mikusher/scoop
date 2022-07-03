@@ -8,14 +8,11 @@ from bs4 import BeautifulSoup
 from etl.utils.constants import GLOBAL_URL, header
 from datetime import timedelta
 from typing import List, Dict
-from dotenv import load_dotenv, find_dotenv
 from etl.utils.converter_number import convert_to_words
 from etl.utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
-
-load_dotenv(find_dotenv())
 
 
 def get_data_range(start_date, end_date):

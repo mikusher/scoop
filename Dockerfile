@@ -3,6 +3,9 @@ ARG PY_VER=3.7.13
 FROM python:${PY_VER} AS etl-py
 MAINTAINER Luis Amilcar Tavares <mikusher@hotmail.com>
 
+# set a environment variable to enviroment variable
+ENV PRODUCTION=True
+
 
 RUN mkdir /app \
         && apt-get update -y \

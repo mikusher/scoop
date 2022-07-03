@@ -78,7 +78,7 @@ def prepare_database():
     loop.set_description('Creating view'.format(4))
     loop.update(1)
     dll_folder = os.path.join(BASE_DIR, '../dll')
-    view_file = os.path.join(dll_folder, 'views_postgres.sql') if PRODUCTION else os.path.join(dll_folder, 'views_sqlite.sql')
+    view_file = os.path.join(dll_folder, 'views_postgres.sql')
     loop.set_description('Creating view'.format(5))
     loop.update(1)
     # read the view file

@@ -1,7 +1,6 @@
 import logging
 from datetime import date, timedelta, datetime
 
-from dotenv import load_dotenv, find_dotenv
 from tqdm import tqdm
 
 from etl.conf.coll_conf import CollectionsSatellite
@@ -11,8 +10,6 @@ from etl.utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
-
-load_dotenv(find_dotenv())
 
 
 def get_last_insert_day() -> date:
