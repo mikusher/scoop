@@ -42,7 +42,7 @@ class CollectionsSatellite:
         :return:
         """
         logger.info('Checking if the day is valid')
-        base_url = '{0}/{1}#PrizePT'.format(GLOBAL_URL, day_check)
+        base_url = '{0}/results/{1}#PrizePT'.format(GLOBAL_URL, day_check)
         logger.info('Base url: {}'.format(base_url))
         # Requests the numbers to URL and returns raw HTML
         delay()

@@ -15,13 +15,19 @@ DATABASE_DB_EX=satellite
 ------------------------------------------------------
 """
 
-
 import logging
+import os
 from datetime import datetime
 
-from etl.controller.database import prepare_database
+from dotenv import load_dotenv
+
+from api.setup import injection_year
+from api.utils.db import Database
+from etl.controller.database import prepare_database, create_session
 from etl.meta.populate import get_euro_number
 from etl.utils.log_managment import init_logger
+from etl.meta.populate import get_last_insert_day
+from etl.utils.managments import last_numbers
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
@@ -33,8 +39,13 @@ if __name__ == "__main__":
     # import time and datetime and log when the script starts and ends
     start_time = datetime.now()
     logger.info('Started at: ' + str(start_time))
+
     prepare_database()
     get_euro_number()
+
+    last_day_email = last_numbers()
+    logger.info('Last day email send: ' + str(last_day_email))
+
     # neural_result = neural()
     # use weka to predict
     # weka.predict(train_data, valid_data)

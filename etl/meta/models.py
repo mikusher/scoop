@@ -8,7 +8,7 @@ from sqlalchemy import (
     String,
     Sequence,
     DateTime,
-    ForeignKey, Numeric, SmallInteger
+    ForeignKey, Numeric, SmallInteger, Index, UniqueConstraint, Boolean
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.dialects.postgresql import ARRAY
@@ -23,11 +23,78 @@ init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
 
 
+# for Api
+class Draw(Base):
+    __tablename__ = constants.TABLE_DRAWS
+
+    id = Column('id', UUID(as_uuid=True), Sequence('draw_id_seq'), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    draw_id = Column(String, unique=True)
+    numbers = Column(ARRAY(Integer))
+    stars = Column(ARRAY(Integer))
+    date = Column(DateTime)
+    prize = Column(Numeric)
+    has_winner = Column(Boolean)
+
+    __table_args__ = (UniqueConstraint('id', 'draw_id', name='draw_id_constrain'), Index('draw_id_index', 'draw_id'))
+
+    def __init__(self, draw_id, numbers, stars, date, prize, has_winner):
+        self.draw_id = draw_id
+        self.numbers = numbers
+        self.stars = stars
+        self.date = date
+        self.prize = prize
+        self.has_winner = has_winner
+
+    def __repr__(self):
+        return '<Draw {}>'.format(self.draw_id)
+
+    def __str__(self):
+        return '<Draw {}>'.format(self.draw_id)
+
+    def __eq__(self, other):
+        return self.draw_id == other.draw_id
+
+    def __hash__(self):
+        return hash(self.draw_id)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'draw_id': self.draw_id,
+            'numbers': self.numbers,
+            'stars': self.stars,
+            'date': self.date,
+            'prize': self.prize,
+            'has_winner': self.has_winner
+        }
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'draw_id': self.draw_id,
+            'numbers': self.numbers,
+            'stars': self.stars,
+            'date': self.date,
+            'prize': self.prize,
+            'has_winner': self.has_winner
+        }
+
+    def to_csv(self):
+        return '{},{},{},{},{},{},{}'.format(
+            self.id,
+            self.draw_id,
+            self.numbers,
+            self.stars,
+            self.date,
+            self.prize,
+            self.has_winner
+        )
+
+
 class GameDate(Base):
     __tablename__ = constants.TABLE_NAME_GAME_DAY
     #  id = Column('id', Integer, Sequence("euro_game_day_id_seq"), primary_key=True)
-    id = Column('id', UUID(as_uuid=True), Sequence("euro_game_day_id_seq"), primary_key=True, default=uuid.uuid4,
-                unique=True, nullable=False)
+    id = Column('id', UUID(as_uuid=True), Sequence("euro_game_day_id_seq"), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     game_date = Column('game_date', DateTime, unique=True, nullable=False, default=datetime.now)
     euroall = relationship("EuroAll", back_populates="game_date")
     winresults = relationship("WinResults", back_populates="game_date")
