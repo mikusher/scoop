@@ -1,6 +1,10 @@
 import os
 
+from dotenv import load_dotenv, find_dotenv
 from fake_headers import Headers
+
+load_dotenv(find_dotenv())
+
 
 GLOBAL_URL = os.getenv('EUROMILLIONS_WEB_BASE_URL')  # 'https://www.euro-millions.com'
 
