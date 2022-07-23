@@ -1,5 +1,5 @@
 beautifulsoup4
-psycopg2-binary
+psycopg2-binary==2.9.3
 python-dateutil
 python-dotenv
 SQLAlchemy
