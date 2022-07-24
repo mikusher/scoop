@@ -2,23 +2,24 @@
 version: "3.7"
 
 services:
-    app:
+    etl-app:
         build:
             context: .
-            dockerfile: ./Dockerfile
+            dockerfile: etl/Dockerfile
         env_file: docker/.env-prod
-        container_name: etl_app
-        command: ["python", "./main.py", "app"]
+        container_name: etl-app
+        command: ["python", "./main.py", "etl-app"]
         restart: always
         volumes:
-            - ./:/app
+            - ./:/etl-app
         depends_on:
             - "db"
             - "redis"
             - "pgadmin"
+
     redis:
         image: redis:latest
-        container_name: etl_redis
+        container_name: redis
         restart: unless-stopped
         ports:
             - "127.0.0.1:6379:6379"
@@ -39,7 +40,7 @@ services:
 
     db:
         image: postgres:10
-        container_name: etl_db
+        container_name: db
         env_file: docker/.env-prod
         command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf", "-c", "hba_file=/etc/postgresql/pg_hba.conf"]
         ports:
@@ -52,7 +53,7 @@ services:
 
     pgadmin:
         image: dpage/pgadmin4
-        container_name: etl_pgadmin
+        container_name: pgadmin
         env_file: docker/.env-prod
         ports:
             - '5050:80'

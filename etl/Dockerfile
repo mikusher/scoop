@@ -23,7 +23,7 @@ WORKDIR /app
 RUN mkdir -p /app/etl/
 
 COPY etl/ /app/etl/
-COPY main.py /app/main.py
+COPY etl/main.py /app/main.py
 
 RUN cd /app \
     && pip install --no-cache -r /app/etl/requirements.txt

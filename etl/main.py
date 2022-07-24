@@ -16,17 +16,11 @@ DATABASE_DB_EX=satellite
 """
 
 import logging
-import os
 from datetime import datetime
 
-from dotenv import load_dotenv
-
-from api.setup import injection_year
-from api.utils.db import Database
-from etl.controller.database import prepare_database, create_session
+from etl.controller.database import prepare_database
 from etl.meta.populate import get_euro_number
 from etl.utils.log_managment import init_logger
-from etl.meta.populate import get_last_insert_day
 from etl.utils.managments import last_numbers
 
 init_logger('{}.log'.format(__name__), __name__)

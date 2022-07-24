@@ -28,24 +28,16 @@ if PRODUCTION:
     DATABASE_PORT = os.getenv("DATABASE_PORT")
     DATABASE_DB_EX = os.getenv("DATABASE_DB_EX")
 
-    EXTERNAL_SQLALCHEMY_DATABASE_URI = "%s://%s:%s@%s:%s/%s" % (
-        DATABASE_DIALECT,
-        DATABASE_USER,
-        DATABASE_PASSWORD,
-        DATABASE_HOST,
-        DATABASE_PORT,
-        DATABASE_DB_EX,
-    )
+    EXTERNAL_SQLALCHEMY_DATABASE_URI = "%s://%s:%s@%s:%s/%s" % (DATABASE_DIALECT, DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST, DATABASE_PORT, DATABASE_DB_EX)
     # production
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_DEV', EXTERNAL_SQLALCHEMY_DATABASE_URI)
     logger.info('The database uri is: ' + SQLALCHEMY_DATABASE_URI)
-    engine = create_engine(SQLALCHEMY_DATABASE_URI)
+    engine = create_engine(url=SQLALCHEMY_DATABASE_URI)
 else:
     # development
     DATABASE_NAME = os.getenv('DATABASE_NAME', 'satellite').strip()
     logger.info('The database name is: ' + DATABASE_NAME)
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_PROD',
-                                        'sqlite:///' + os.path.join(BASE_DIR, '{}.db'.format(DATABASE_NAME)))
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_PROD', 'sqlite:///' + os.path.join(BASE_DIR, '{}.db'.format(DATABASE_NAME)))
     logger.info('The database uri is: ' + SQLALCHEMY_DATABASE_URI)
     engine = create_engine(SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False})
 
