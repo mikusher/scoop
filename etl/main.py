@@ -1,5 +1,5 @@
 """
-Get euro million data and save to database.
+Get euro a million data and save to database.
 Training data is saved to database.
 Prediction data is saved to database.
 
@@ -25,7 +25,6 @@ from etl.utils.managments import last_numbers
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
-debug_log = logging.getLogger(__name__)
 
 # Using the special variable
 # __name__

@@ -6,8 +6,9 @@ from sqlalchemy.orm import sessionmaker
 
 class Database:
     def __init__(self):
+        self.conn = None
         try:
-            if hasattr(self, 'conn') and self.conn != None:
+            if hasattr(self, 'conn') and self.conn is not None:
                 self.close()
 
             self.conn = psycopg2.connect(

@@ -1,4 +1,4 @@
-from api.utils import db
+from utils.api.utils import db
 
 
 def get_draws(year: int, dates: list, limit=None, orderBy=["date", "ASC"]) -> list:

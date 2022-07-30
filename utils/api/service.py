@@ -1,5 +1,4 @@
-from datetime import date
-from api import persistence, external
+from utils.api import persistence
 
 
 def get_draws(year: int, dates: list) -> list:

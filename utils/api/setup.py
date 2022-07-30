@@ -2,11 +2,8 @@ import json
 import os
 from datetime import datetime
 
-from dotenv import load_dotenv
-
-from api import external
-from api.utils.db import Database
-from etl.meta.models import Draw
+from utils.api import external
+from utils.api.utils.db import Database
 
 global db
 db = Database()

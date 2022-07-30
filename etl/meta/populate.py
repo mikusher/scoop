@@ -6,6 +6,7 @@ from tqdm import tqdm
 from etl.conf.coll_conf import CollectionsSatellite
 from etl.controller.database import create_session
 from etl.meta.models import EuroAll, GameDate, WinResults, EuroStarNumbers, UnionNumbers, UnionStars
+from etl.utils.internal_soup import InternalSoup
 from etl.utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
@@ -177,15 +178,15 @@ def get_euro_number():
     loop = tqdm(total=len(days_to_check), unit='%', position=0, leave=True)
     for _day in days_to_check:
         loop.set_description('Check day: {}'.format(_day))
-        page = CollectionsSatellite.is_valid_day(_day, loop)
-        if page.status_code != 404 and page.ok:
+        loop.update(1)
+        if InternalSoup(_day).isvalid_request():
             day_in_db = day_exist_in_db(_day)
             if day_in_db:
-                balls_and_star = CollectionsSatellite.check_numbers(_day, page.content)
+                logger.info('Day {} already in database'.format(_day))
+                balls_and_star = InternalSoup(_day).get_numbers()
                 # add number to database
                 add_number(balls_and_star, _day)
                 logger.info('Added number for day {}'.format(_day))
                 loop.update(1)
-
     loop.set_description('Done')
     loop.close()

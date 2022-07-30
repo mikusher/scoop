@@ -1,7 +1,7 @@
-import os
-from api.utils.db import Database
-from flask import Blueprint, request, jsonify, request
-from api import service, db
+from utils.api.utils.db import Database
+from flask import Blueprint, jsonify, request
+from utils import db
+from utils.api import service
 
 bp = Blueprint('euro-api', __name__)
 
