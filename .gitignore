@@ -9,6 +9,7 @@ __pycache__/
 
 # To remove
 etl-api/
+.flaskenv
 
 # Distribution / packaging
 .Python
