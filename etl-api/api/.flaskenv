@@ -1,0 +1,9 @@
+FLASK_APP=micro_scoop.py
+FLASK_ENV=development
+DATABASE_URL=postgresql://superset:superset@db:5432/satellite
+DATABASE_DIALECT=postgresql
+POSTGRES_USER=superset
+POSTGRES_PASSWORD=superset
+DATABASE_HOST=db
+DATABASE_PORT=5433
+DATABASE_DB_EX=satellite
