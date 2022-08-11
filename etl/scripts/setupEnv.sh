@@ -62,7 +62,7 @@ fi
 if [ $choice -eq 1 ]; then
     echo "Running application."
     . venv/bin/activate
-    python3 main.py
+    python3 etl.py
     if [ $? -eq 0 ]; then
         echo "Application was successfully run."
     else

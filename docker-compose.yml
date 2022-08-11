@@ -1,71 +1,104 @@
 
+x-superset-image: &superset-image amancevice/superset:2.0.0
+x-superset-depends-on: &superset-depends-on
+  - db
+  - redis
+  - etl-app
+x-superset-volumes: &superset-volumes
+  - ./docker/docker-init.sh:/app/docker-init.sh
+  - ./docker/euro-dashboard.json:/app/euro-dashboard.json
+  - ./docker/PostgreExternals.yaml:/app/PostgreExternals.yaml
+  - ./docker/pythonpath_dev:/app/pythonpath
+  - superset_home:/app/superset_home
+
+
 version: "3.7"
 
 services:
-    etl-app:
-        build:
-            context: .
-            dockerfile: etl/Dockerfile
-        env_file: docker/.env-prod
-        container_name: etl-app
-        command: ["python", "./main.py", "etl-app"]
-        restart: always
-        volumes:
-            - ./:/etl-app
-        depends_on:
-            - "db"
-            - "redis"
-            - "pgadmin"
+  etl-app:
+    build:
+      context: .
+      dockerfile: etl/Dockerfile
+    env_file: docker/.env-prod
+    container_name: etl-app
+    command: [ "python", "./etl_app.py", "etl-app" ]
+    restart: unless-stopped
+    volumes:
+      - ./etl:/etl-app
+    depends_on:
+      - "db"
+      - "pgadmin"
 
-    redis:
-        image: redis:latest
-        container_name: redis
-        restart: always
-        ports:
-            - '127.0.0.1:6379:6379'
-        volumes:
-            - redis:/data
+  db:
+    image: postgres:10
+    container_name: db
+    env_file: docker/.env-prod
+    command: [ "postgres", "-c", "config_file=/etc/postgresql/postgresql.conf", "-c", "hba_file=/etc/postgresql/pg_hba.conf" ]
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    volumes:
+      - db_home:/var/lib/postgresql/data
+      - ./docker/postgresqlconfig/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./docker/postgresqlconfig/pg_hba.conf:/etc/postgresql/pg_hba.conf
 
-    redis-commander:
-        image: rediscommander/redis-commander:latest
-        container_name: redis_commander
-        environment:
-            - REDIS_HOSTS=local:redis:6379
-            - HTTP_USER=root
-            - HTTP_PASSWORD=qwerty
-        ports:
-            - '8081:8081'
-        depends_on:
-            - redis
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    env_file: docker/.env-prod
+    ports:
+      - '5050:80'
+    restart: unless-stopped
+    depends_on:
+      - "db"
+    volumes:
+      - pgadmin:/root/.pgadmin
 
-    db:
-        image: postgres:10
-        container_name: db
-        env_file: docker/.env-prod
-        command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf", "-c", "hba_file=/etc/postgresql/pg_hba.conf"]
-        ports:
-            - '5432:5432'
-        restart: always
-        volumes:
-            - database-data:/var/lib/postgresql/data/
-            - ./docker/postgresqlconfig/postgresql.conf:/etc/postgresql/postgresql.conf
-            - ./docker/postgresqlconfig/pg_hba.conf:/etc/postgresql/pg_hba.conf
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:6379:6379'
+    volumes:
+      - redis:/data
 
-    pgadmin:
-        image: dpage/pgadmin4
-        container_name: pgadmin
-        env_file: docker/.env-prod
-        ports:
-            - '5050:80'
-        restart: always
-        depends_on:
-            -   "db"
-        volumes:
-            - pgadmin:/root/.pgadmin
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis_commander
+    restart: unless-stopped
+    env_file: docker/.env-prod
+    ports:
+      - '8081:8081'
+    depends_on:
+      - redis
+
+  superset:
+    env_file: docker/.env-prod
+    image: *superset-image
+    container_name: superset_app
+    command: [ "flask", "run", "-p", "8088", "--with-threads", "--reload", "--debugger", "--host=0.0.0.0" ]
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+    depends_on: *superset-depends-on
+    volumes: *superset-volumes
+
+  superset-init:
+      env_file: docker/.env-prod
+      image: *superset-image
+      container_name: superset_init
+      command: ["/app/docker-init.sh"]
+      user: "root"
+      depends_on: *superset-depends-on
+      volumes: *superset-volumes
+
 volumes:
-    database-data:
-        external: false
-    pgadmin:
-        external: false
-    redis:
-        external: false
+  db_home:
+    external: false
+  pgadmin:
+    external: false
+  redis:
+    external: false
+  superset_home:
+    external: false

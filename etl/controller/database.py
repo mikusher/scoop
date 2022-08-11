@@ -17,33 +17,48 @@ load_dotenv(find_dotenv())
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-
 # get environment boolean variables from .env file PRODUCTION
 PRODUCTION = os.getenv('PRODUCTION', 'False').lower() in ('true', '1', 't')
 if PRODUCTION:
     DATABASE_DIALECT = os.getenv("DATABASE_DIALECT")
-    DATABASE_USER = os.getenv("POSTGRES_USER")
-    DATABASE_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+    DATABASE_USER = os.getenv("DATABASE_USER")
+    DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
     DATABASE_HOST = os.getenv("DATABASE_HOST")
     DATABASE_PORT = os.getenv("DATABASE_PORT")
-    DATABASE_DB_EX = os.getenv("DATABASE_DB_EX")
+    SUPERSET_DB_NAME = os.getenv("SUPERSET_DB_NAME", "superset")
+    DATABASE_DB_EX = os.getenv("DATABASE_DB_EX", "externals")
 
-    EXTERNAL_SQLALCHEMY_DATABASE_URI = "%s://%s:%s@%s:%s/%s" % (DATABASE_DIALECT, DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST, DATABASE_PORT, DATABASE_DB_EX)
+    # create a database engine for etl database
+    EXTERNAL_SQLALCHEMY_DATABASE_URI = "%s://%s:%s@%s:%s/%s" % (
+        DATABASE_DIALECT, DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST, DATABASE_PORT, DATABASE_DB_EX)
     # production
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_DEV', EXTERNAL_SQLALCHEMY_DATABASE_URI)
     logger.info('The database uri is: ' + SQLALCHEMY_DATABASE_URI)
     engine = create_engine(url=SQLALCHEMY_DATABASE_URI)
 else:
     # development
-    DATABASE_NAME = os.getenv('DATABASE_NAME', 'satellite').strip()
+    DATABASE_NAME = os.getenv('DATABASE_DB_EX', 'externals').strip()
     logger.info('The database name is: ' + DATABASE_NAME)
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_PROD', 'sqlite:///' + os.path.join(BASE_DIR, '{}.db'.format(DATABASE_NAME)))
+    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_PROD',
+                                        'sqlite:///' + os.path.join(BASE_DIR, '{}.db'.format(DATABASE_NAME)))
     logger.info('The database uri is: ' + SQLALCHEMY_DATABASE_URI)
     engine = create_engine(SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False})
 
-
 # create a base class for declarative class definitions
 Base = declarative_base()
+
+
+def create_superset_database():
+    logger.info('Creating superset database')
+    # create a database engine for superset database
+    superset_sqlalchemy_uri = "%s://%s:%s@%s:%s/%s" % (
+        DATABASE_DIALECT, DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST, DATABASE_PORT, SUPERSET_DB_NAME)
+    logger.info('The superset database uri is: ' + superset_sqlalchemy_uri)
+    superset_engine = create_engine(superset_sqlalchemy_uri)
+    if not database_exists(superset_engine.url):
+        logger.info('Superset Database does not exist')
+        create_database(superset_engine.url)
+        logger.info('Superset Database created')
 
 
 def prepare_database():

@@ -6,7 +6,7 @@ from fake_headers import Headers
 load_dotenv(find_dotenv())
 
 
-GLOBAL_URL = os.getenv('EUROMILLIONS_WEB_BASE_URL')  # 'https://www.euro-millions.com'
+GLOBAL_URL = os.getenv('EUROMILLIONS_WEB_BASE_URL', 'https://www.euro-millions.com')  # 'https://www.euro-millions.com'
 
 # headers for requests
 header = Headers(browser="chrome", os="win", headers=True)
