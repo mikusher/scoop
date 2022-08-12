@@ -1,13 +1,15 @@
 
-ARG PY_VER=3.7.13
+ARG PY_VER=3.8-slim
 FROM python:${PY_VER} AS etl-py
 MAINTAINER Luis Amilcar Tavares <mikusher@hotmail.com>
 
 # set a environment variable to enviroment variable
 ENV PRODUCTION=True
 
+RUN groupadd --gid 1000 user && \
+    useradd --uid 1000 --gid 1000 --create-home --shell /bin/bash user
 
-RUN mkdir /app \
+RUN mkdir -p /home/user/app \
         && apt-get update -y \
         && apt-get install -y --no-install-recommends \
             build-essential \
@@ -18,12 +20,13 @@ RUN mkdir /app \
             cron \
     && pip install --upgrade pip
 
-WORKDIR /app
 
-RUN mkdir -p /app/etl/
+COPY etl/ /home/user/app/etl
 
-COPY etl/ /app/etl/
-COPY etl/etl_app.py /app/etl_app.py
 
-RUN cd /app \
-    && pip install --no-cache -r /app/etl/requirements.txt
+RUN cd /home/user/app/etl \
+    && pip install --no-cache-dir -r requirements.txt
+
+RUN chown -R "1000:1000" /home/user
+USER user
+WORKDIR /home/user/app

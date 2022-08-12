@@ -3,7 +3,7 @@ x-superset-image: &superset-image amancevice/superset:2.0.0
 x-superset-depends-on: &superset-depends-on
   - db
   - redis
-  - etl-app
+  - etl_app
 x-superset-volumes: &superset-volumes
   - ./docker/docker-init.sh:/app/docker-init.sh
   - ./docker/euro-dashboard.json:/app/euro-dashboard.json
@@ -15,19 +15,39 @@ x-superset-volumes: &superset-volumes
 version: "3.7"
 
 services:
-  etl-app:
+  ofelia:
+    image: mcuadros/ofelia:latest
+    restart: always
+    container_name: ofelia
+    depends_on:
+      - etl_app
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-run.app.schedule: "0 0 21 * * TUE,FRI" # * * 21 * 2
+      ofelia.job-run.app.container: "etl-app"
+
+  etl_app:
+    image: etl-app
+    container_name: etl_app
+    #restart: always
+    user: user
+    env_file: docker/.env-prod
+    command: [ "python", "./etl/etl_app.py", "etl" ]
     build:
       context: .
       dockerfile: etl/Dockerfile
-    env_file: docker/.env-prod
-    container_name: etl-app
-    command: [ "python", "./etl_app.py", "etl-app" ]
-    restart: unless-stopped
     volumes:
       - ./etl:/etl-app
     depends_on:
       - "db"
       - "pgadmin"
+  #  labels:
+  #    ofelia.enabled: "true"
+  #    ofelia.job-exec.etl-app.schedule: "@every 10s"
+  #    ofelia.job-exec.etl-app.command: "pwd"
 
   db:
     image: postgres:10
@@ -85,13 +105,13 @@ services:
     volumes: *superset-volumes
 
   superset-init:
-      env_file: docker/.env-prod
-      image: *superset-image
-      container_name: superset_init
-      command: ["/app/docker-init.sh"]
-      user: "root"
-      depends_on: *superset-depends-on
-      volumes: *superset-volumes
+    env_file: docker/.env-prod
+    image: *superset-image
+    container_name: superset_init
+    command: ["/app/docker-init.sh"]
+    user: "root"
+    depends_on: *superset-depends-on
+    volumes: *superset-volumes
 
 volumes:
   db_home:

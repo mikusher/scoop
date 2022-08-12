@@ -3,7 +3,7 @@
 # A function that prints given number in words
 import logging
 
-from etl.utils.log_managment import init_logger
+from utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
@@ -26,7 +26,8 @@ def convert_to_words(num) -> str:
     single_digits = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
 
     # The first string is not used, it is to make array indexing simple
-    two_digits = ["", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+    two_digits = ["", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen",
+                  "nineteen"]
 
     # The first two string are not used, they are to make array indexing simple
     tens_multiple = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]

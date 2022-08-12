@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv, find_dotenv
 from tqdm import tqdm
 
-from etl.utils.log_managment import init_logger
+from utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)

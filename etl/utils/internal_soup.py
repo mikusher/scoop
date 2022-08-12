@@ -7,9 +7,9 @@ from typing import Dict
 import requests
 from bs4 import BeautifulSoup as bs
 
-from etl.utils.constants import GLOBAL_URL, header
-from etl.utils.converter_number import convert_to_words
-from etl.utils.log_managment import init_logger
+from utils.constants import GLOBAL_URL, header
+from utils.converter_number import convert_to_words
+from utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)

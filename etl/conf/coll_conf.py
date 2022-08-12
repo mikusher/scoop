@@ -4,8 +4,8 @@ from typing import List
 
 import requests
 
-from etl.utils.constants import GLOBAL_URL, header
-from etl.utils.log_managment import init_logger
+from utils.constants import GLOBAL_URL, header
+from utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 def get_data_range(start_date, end_date):
     """
     Get the data range from the start date to the end date.
-    :param start_date:
+    param start_date:
     :param end_date:
     :return:
     """

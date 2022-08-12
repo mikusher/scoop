@@ -9,11 +9,11 @@ from email.mime.text import MIMEText
 from email.utils import formataddr
 import email.encoders as Encoders
 
-from etl.controller.database import create_session
-from etl.meta.models import EuroStarNumbers, GameDate
+from controller.database import create_session
+from meta.models import EuroStarNumbers, GameDate
 
-from etl.meta.populate import get_last_insert_day
-from etl.utils.log_managment import init_logger
+from meta.populate import get_last_insert_day
+from utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
