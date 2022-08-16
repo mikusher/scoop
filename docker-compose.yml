@@ -107,7 +107,7 @@ services:
     image: rediscommander/redis-commander:latest
     container_name: redis_commander
     restart: unless-stopped
-    env_file: docker/config/.redis_command.env
+    env_file: docker/config/redis_command.env
     ports:
       - '8081:8081'
     depends_on:
