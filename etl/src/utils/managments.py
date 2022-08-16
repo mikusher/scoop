@@ -1,19 +1,16 @@
+import email.encoders as Encoders
+import logging
 import os
 import smtplib
 import time
-import logging
-
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
-import email.encoders as Encoders
 
-from controller.database import create_session
-from meta.models import EuroStarNumbers, GameDate
-
-from meta.populate import get_last_insert_day
-from utils.log_managment import init_logger
+from src.controller.database import create_session
+from src.meta.models import EuroStarNumbers, GameDate
+from src.utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)

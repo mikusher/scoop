@@ -32,13 +32,13 @@ EOF
 }
 
 # Create an admin user
-echo_step "1" "Starting" "Setting up admin user ( admin / admin )"
+echo_step "1" "Starting" "Setting up admin user ( admin / superset )"
 superset fab create-admin \
               --username admin \
               --firstname Superset \
               --lastname Admin \
               --email admin@superset.com \
-              --password admin
+              --password "${SUPERSET_PASSWORD}"
 echo_step "1" "Complete" "Setting up admin user"
 
 # Initialize the database
@@ -57,12 +57,12 @@ if [ "$SUPERSET_LOAD_EXAMPLES" = "yes" ]; then
     echo_step "4.1" "Complete" "Loading examples"
 fi
 
-# Import Euro datasource
-echo_step "5" "Starting" "Importing the EuroMillion storm datasource"
-## superset import-datasources --path ./app/database.yml
-echo_step "5" "Complete" "Importing the EuroMillion storm datasource"
+## Import Euro datasource
+# echo_step "5" "Starting" "Importing the EuroMillion storm datasource"
+# superset import-datasources --path ./externals.yml
+# echo_step "5" "Complete" "Importing the EuroMillion storm datasource"
 
-# # Import Euro dashboards
-echo_step "6" "Starting" "Importing the EuroMillion storm dashboard"
-## superset import-dashboards --path ./app/dashboard.json
-echo_step "6" "Complete" "Importing the EuroMillion storm dashboard"
+## Import Euro dashboards
+# echo_step "6" "Starting" "Importing the EuroMillion storm dashboard"
+# superset import-dashboards --path ./app/dashboard.json
+# echo_step "6" "Complete" "Importing the EuroMillion storm dashboard"

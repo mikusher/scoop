@@ -1,14 +1,15 @@
 import logging
 import os
+from typing import Any
 
+from dotenv import load_dotenv, find_dotenv
 from sqlalchemy import create_engine, text
-from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv, find_dotenv
+from sqlalchemy_utils import database_exists, create_database
 from tqdm import tqdm
 
-from utils.log_managment import init_logger
+from src.utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
@@ -19,30 +20,38 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # get environment boolean variables from .env file PRODUCTION
 PRODUCTION = os.getenv('PRODUCTION', 'False').lower() in ('true', '1', 't')
-if PRODUCTION:
-    DATABASE_DIALECT = os.getenv("DATABASE_DIALECT")
-    DATABASE_USER = os.getenv("DATABASE_USER")
-    DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
-    DATABASE_HOST = os.getenv("DATABASE_HOST")
-    DATABASE_PORT = os.getenv("DATABASE_PORT")
-    SUPERSET_DB_NAME = os.getenv("SUPERSET_DB_NAME", "superset")
-    DATABASE_DB_EX = os.getenv("DATABASE_DB_EX", "externals")
+ETL_DATABASE_DIALECT = os.getenv("ETL_DATABASE_DIALECT")
+ETL_DATABASE_USER = os.getenv("ETL_DATABASE_USER")
+ETL_DATABASE_PASSWORD = os.getenv("ETL_DATABASE_PASSWORD")
+ETL_DATABASE_HOST = os.getenv("ETL_DATABASE_HOST")
+ETL_DATABASE_PORT = os.getenv("ETL_DATABASE_PORT")
+ETL_DATABASE_DB_EX = os.getenv("ETL_DATABASE_DB_EX", "externals")
 
+
+def production_engine(dialect, user, password, host, port, db) -> Any:
     # create a database engine for etl database
-    EXTERNAL_SQLALCHEMY_DATABASE_URI = "%s://%s:%s@%s:%s/%s" % (
-        DATABASE_DIALECT, DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST, DATABASE_PORT, DATABASE_DB_EX)
+    EXTERNAL_SQLALCHEMY_DATABASE_URI = "%s://%s:%s@%s:%s/%s" % (dialect, user, password, host, port, db)
     # production
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_DEV', EXTERNAL_SQLALCHEMY_DATABASE_URI)
-    logger.info('The database uri is: ' + SQLALCHEMY_DATABASE_URI)
-    engine = create_engine(url=SQLALCHEMY_DATABASE_URI)
-else:
+    _db_uri = os.getenv('SQLALCHEMY_DATABASE_URI_DEV', EXTERNAL_SQLALCHEMY_DATABASE_URI)
+    _engine = create_engine(url=_db_uri)
+    logger.info('The database uri is: ' + _db_uri)
+    return _db_uri, _engine
+
+
+def development_engine(basedir) -> Any:
     # development
     DATABASE_NAME = os.getenv('DATABASE_DB_EX', 'externals').strip()
     logger.info('The database name is: ' + DATABASE_NAME)
-    SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI_PROD',
-                                        'sqlite:///' + os.path.join(BASE_DIR, '{}.db'.format(DATABASE_NAME)))
-    logger.info('The database uri is: ' + SQLALCHEMY_DATABASE_URI)
-    engine = create_engine(SQLALCHEMY_DATABASE_URI, connect_args={"check_same_thread": False})
+    _db_uri = os.getenv('SQLALCHEMY_DATABASE_URI_PROD','sqlite:///' + os.path.join(basedir, '{}.db'.format(DATABASE_NAME)))
+    _engine = create_engine(_db_uri, connect_args={"check_same_thread": False})
+    logger.info('The database uri is: ' + _db_uri)
+    return _db_uri, _engine
+
+
+if PRODUCTION:
+    db_uri, engine = production_engine(ETL_DATABASE_DIALECT, ETL_DATABASE_USER, ETL_DATABASE_PASSWORD, ETL_DATABASE_HOST, ETL_DATABASE_PORT, ETL_DATABASE_DB_EX)
+else:
+    db_uri, engine = development_engine(BASE_DIR)
 
 # create a base class for declarative class definitions
 Base = declarative_base()
@@ -50,9 +59,11 @@ Base = declarative_base()
 
 def create_superset_database():
     logger.info('Creating superset database')
+    SUPERSET_DB_NAME = os.getenv("SUPERSET_DB_NAME", "superset")
     # create a database engine for superset database
     superset_sqlalchemy_uri = "%s://%s:%s@%s:%s/%s" % (
-        DATABASE_DIALECT, DATABASE_USER, DATABASE_PASSWORD, DATABASE_HOST, DATABASE_PORT, SUPERSET_DB_NAME)
+        ETL_DATABASE_DIALECT, ETL_DATABASE_USER, ETL_DATABASE_PASSWORD, ETL_DATABASE_HOST, ETL_DATABASE_PORT,
+        SUPERSET_DB_NAME)
     logger.info('The superset database uri is: ' + superset_sqlalchemy_uri)
     superset_engine = create_engine(superset_sqlalchemy_uri)
     if not database_exists(superset_engine.url):
@@ -109,11 +120,12 @@ def prepare_database():
 
 
 def create_session() -> sessionmaker:
+
     logger.info('Creating session')
     # engine
     logger.info('Creating engine')
-    sqlalchemy_uri = SQLALCHEMY_DATABASE_URI
-    logger.info('Creating engine with uri: ' + sqlalchemy_uri)
+    # sqlalchemy_uri = SQLALCHEMY_DATABASE_URI
+    # logger.info('Creating engine with uri: ' + sqlalchemy_uri)
     logger.info('Engine created')
     # create a configured "Session" class
     Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)

@@ -15,9 +15,9 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 from wheel.util import as_unicode
 
-from utils import constants
-from controller.database import Base
-from utils.log_managment import init_logger
+from src.utils import constants
+from src.controller.database import Base
+from src.utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)

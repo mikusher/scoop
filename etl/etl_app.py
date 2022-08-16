@@ -10,10 +10,10 @@ import logging
 import os
 from datetime import datetime
 
-from controller.database import prepare_database, create_superset_database
-from meta.populate import get_euro_number
-from utils.log_managment import init_logger
-from utils.managments import last_numbers
+from src.controller.database import prepare_database, create_superset_database
+from src.meta.populate import get_euro_number
+from src.utils.log_managment import init_logger
+from src.utils.managments import last_numbers
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)

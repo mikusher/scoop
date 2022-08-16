@@ -39,10 +39,10 @@ INSERT_EURO_NUMBERS = "insert into euro_all (ball_1, ball_2, ball_3, ball_4, bal
 LAST_INSERT_DAY = "select play_day FROM euro_all WHERE id = (SELECT MAX(id) FROM euro_all)"
 
 # end date
-END_DATE = os.getenv('END_DATE')
+# END_DATE = os.getenv('END_DATE')
 
 # Database you intend to use
-DB_CORE_HOST = os.getenv('DB_CORE_HOST')
-DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_DATABASE_NAME = os.getenv('DB_DATABASE_NAME')
+# DB_CORE_HOST = os.getenv('DB_CORE_HOST')
+# DB_USER = os.getenv('DB_USER')
+# DB_PASSWORD = os.getenv('DB_PASSWORD')
+# DB_DATABASE_NAME = os.getenv('DB_DATABASE_NAME')

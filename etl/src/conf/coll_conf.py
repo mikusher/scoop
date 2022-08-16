@@ -1,11 +1,12 @@
 import logging
 from datetime import timedelta
+from turtle import delay
 from typing import List
 
 import requests
 
-from utils.constants import GLOBAL_URL, header
-from utils.log_managment import init_logger
+from src.utils.constants import GLOBAL_URL, header
+from src.utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
@@ -36,7 +37,7 @@ class CollectionsSatellite:
         base_url = '{0}/results/{1}#PrizePT'.format(GLOBAL_URL, day_check)
         logger.info('Base url: {}'.format(base_url))
         # Requests the numbers to URL and returns raw HTML
-        delay()
+        delay(10)
         random_header = header.generate()
         page = requests.get(base_url, headers=random_header)
         logger.info('Requesting the page')

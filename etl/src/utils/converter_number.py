@@ -3,7 +3,7 @@
 # A function that prints given number in words
 import logging
 
-from utils.log_managment import init_logger
+from src.utils.log_managment import init_logger
 
 init_logger('{}.log'.format(__name__), __name__)
 logger = logging.getLogger(__name__)
