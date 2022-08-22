@@ -63,8 +63,10 @@ def send_email(last_day, numbers, stars):
 
 
 def last_numbers():
-    last_day = False
+    last_day = None
     conn = None
+    message = None
+    email_send = False
     try:
         session = create_session()
         uuid_day = session.query(GameDate).order_by(GameDate.game_date.desc()).first().id
@@ -74,9 +76,23 @@ def last_numbers():
             last_day = euro_n_s.game_date.game_date.strftime("%d-%m-%Y")
             last_num = euro_n_s.euro_numbers
             last_stars = euro_n_s.star_numbers
-            logger.info("Last numbers: {} {} {}".format(last_day, last_num, last_stars))
+            # ASCII representation
+            msg = """
+            ╔═════════════════════════════════╗
+            ║          TABLE OF RESULTS       ║
+            ╠═════════╗═══════════════════════╣
+            ║ DAY     ║ {}            ║
+            ╠═════════╬═══════════════════════╣
+            ║ NUMBER  ║ {}  ║
+            ╠═════════╬═══════════════════════╣
+            ║ STAR    ║ {}               ║
+            ╚═════════╩═══════════════════════╝
+            \n""".format(last_day, last_num, last_stars)
+
             send_email(last_day, last_num, last_stars)
-            last_day = True
+            logger.info(msg)
+            email_send = True
+            message = msg
         session.close()
     except (Exception,) as error:
         logger.error(error)
@@ -84,4 +100,4 @@ def last_numbers():
         if conn is not None:
             conn.close()
             logger.info('Database connection closed, for get last day in DB.')
-    return last_day
+    return email_send, message

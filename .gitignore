@@ -110,7 +110,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-etl/.env
+millennium/.env
 .env-prod
 .venv
 env/

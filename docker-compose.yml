@@ -57,7 +57,7 @@ services:
     command: [ "python", "./etl/etl_app.py", "etl" ]
     build:
       context: .
-      dockerfile: etl/Dockerfile
+      dockerfile: millennium/Dockerfile
     volumes:
       - ./etl:/etl-app
     depends_on:
