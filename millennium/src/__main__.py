@@ -37,8 +37,7 @@ def parse_args():
     print(banner)
     parser = argparse.ArgumentParser(add_help=True, description="Automatic get euro million values.")
     parser.add_argument("-d", "--stardate", default="13-02-2004", help="Day to start getting data, format: dd-mm-yyyy")
-    parser.add_argument("-s", "--superset_db", default=False, action="store_true",
-                        help="Create a superset database, default: False")
+    parser.add_argument("-s", "--superset_db", default=False, action="store_true", help="Create a superset database, default: False")
     parser.add_argument("-l", "--show_last", default=False, action="store_true", help="Show last results in the database")
     parser.add_argument("-v", "--version", action="version", version="%(prog)s " + VERSION)
     return parser.parse_args()
