@@ -21,10 +21,10 @@ RUN mkdir -p /home/user/app \
     && pip install --upgrade pip
 
 
-COPY etl/ /home/user/app/etl
+COPY ../millennium/ /home/user/app/millennium
 
 
-RUN cd /home/user/app/etl \
+RUN cd /home/user/app/millennium \
     && pip install --no-cache-dir -r requirements.txt
 
 RUN chown -R "1000:1000" /home/user

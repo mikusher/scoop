@@ -54,12 +54,12 @@ services:
     container_name: etl_app
     user: user
     env_file: docker/config/etl.env
-    command: [ "python", "./etl/etl_app.py", "etl" ]
+    command: [ "python", "./millennium/Millennium.py", "millennium" ]
     build:
       context: .
       dockerfile: millennium/Dockerfile
     volumes:
-      - ./etl:/etl-app
+      - ./millennium:/millennium
     depends_on:
       - "db"
       - "pgadmin"
@@ -184,6 +184,10 @@ volumes:
   minio_volume:
     external: false
   data1-1:
+    external: false
   data1-2:
+    external: false
   data2-1:
+    external: false
   data2-2:
+    external: false
