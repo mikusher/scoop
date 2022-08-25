@@ -26,7 +26,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author_email="mikusher@protonmail.com",
-    packages=["src", "src.conf", "src.controller", "src.meta", "src.utils"],
+    packages=["millennium.src", "src.conf", "src.controller", "src.meta", "src.utils"],
     package_data={'millennium': ['src/dll/']},
     include_package_data=True,
     license="GPL2",
