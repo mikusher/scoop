@@ -26,3 +26,4 @@ pyjwt~=2.4.0
 marshmallow~=3.12.2
 sqlalchemy_utils
 impacket
+poetry-core
