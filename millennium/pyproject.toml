@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "millennium"
+version = "1.0"
+description = "A python script to automatically get euro million result, in ETL process."
+authors = ["mikusher"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+impacket = "^0.10.0"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+millennium="millennium.src.__main__:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
