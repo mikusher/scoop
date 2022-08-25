@@ -26,8 +26,8 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author_email="mikusher@protonmail.com",
-    packages=["millennium.src", "src.conf", "src.controller", "src.meta", "src.utils"],
-    package_data={'millennium': ['src/dll/']},
+    packages=["millennium.src", "millennium.src.conf", "millennium.src.controller", "millennium.src.meta", "millennium.src.utils"],
+    package_data={'millennium': ['millennium/src/dll/']},
     include_package_data=True,
     license="GPL2",
     classifiers=[
@@ -38,6 +38,6 @@ setuptools.setup(
     python_requires='>=3.6',
     install_requires=requirements,
     entry_points={
-        'console_scripts': ['millennium=src.__main__:main']
+        'console_scripts': ['millennium=millennium.src.__main__:main']
     }
 )
