@@ -54,8 +54,8 @@ def main():
 
     if SUPERSET_CREATE_DB or options.superset_db:
         create_superset_database()
-    # prepare_database()
-    # get_euro_number()
+    prepare_database()
+    get_euro_number()
 
     if options.show_last or True:
         email_send, message = last_numbers()

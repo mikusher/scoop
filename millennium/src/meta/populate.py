@@ -1,10 +1,11 @@
 import logging
 from datetime import date, timedelta, datetime
 
+from sqlalchemy import select
 from tqdm import tqdm
 
 from src.conf.coll_conf import CollectionsSatellite
-from src.controller.database import create_session
+from src.controller.database import create_session, refresh_materialized_views, get_session
 from src.meta.models import EuroAll, GameDate, WinResults, EuroStarNumbers, UnionNumbers, UnionStars
 from src.utils.internal_soup import InternalSoup
 from src.utils.log_managment import init_logger
@@ -17,11 +18,11 @@ def get_last_insert_day() -> date:
     conn = None
     last_day = date(2004, 2, 13)  # default value
     try:
-        session = create_session()
-        day_in_db = session.query(GameDate).order_by(GameDate.game_date.desc()).first()
-        if day_in_db is not None:
-            pre_last_day = day_in_db.game_date + timedelta(days=1)
-            last_day = date(pre_last_day.year, pre_last_day.month, pre_last_day.day)
+        with get_session() as session:
+            day_in_db = session.query(GameDate).order_by(GameDate.game_date.desc()).first()
+            if day_in_db is not None:
+                pre_last_day = day_in_db.game_date + timedelta(days=1)
+                last_day = date(pre_last_day.year, pre_last_day.month, pre_last_day.day)
         session.close()
     except (Exception,) as error:
         logger.error(error)
@@ -37,8 +38,8 @@ def get_total_days() -> int:
     session = None
     total_days = 0
     try:
-        session = create_session()
-        total_days = session.query(GameDate).count()
+        with get_session() as session:
+            total_days = session.query(GameDate).count()
         session.close()
     except (Exception,) as error:
         logger.error(error)
@@ -53,8 +54,8 @@ def day_exist_in_db(_day) -> bool:
     session = None
     check = False
     try:
-        session = create_session()
-        check = session.query(GameDate).filter(GameDate.game_date == _day).first()
+        with get_session() as session:
+            check = session.query(GameDate).filter(GameDate.game_date == _day).first()
         if check is None:
             check = True
         session.close()
@@ -73,90 +74,76 @@ def add_number(balls_and_star, _day):
     stars = balls_and_star['stars']
     million = balls_and_star['m1lhao']
     winners = balls_and_star['winners']
-    day = _day
+    day = datetime.strptime(_day, '%d-%m-%Y')
     try:
-        session = create_session()
-        # game_date
-        # convert datatime
-        day = datetime.strptime(day, '%d-%m-%Y')
+        with get_session() as session:
+            # game_date
+            # convert datatime
 
-        game_date = GameDate(game_date=day)
-        session.add(game_date)
-        session.commit()
-
-        # game_date_id
-        game_to_get = session.query(GameDate).filter(GameDate.game_date == day).first()
-
-        eurostarnumbers = EuroStarNumbers()
-        eurostarnumbers.game_date_id = game_to_get.id
-        eurostarnumbers.euro_numbers = balls
-        eurostarnumbers.star_numbers = stars
-        session.add(eurostarnumbers)
-        session.commit()
-
-        # EuroAll
-        euro_all = EuroAll()
-        euro_all.game_date_id = game_to_get.id
-        euro_all.million = million if million is not None else 0
-        euro_all.ball_week_1 = int(balls[0])
-        euro_all.ball_week_2 = int(balls[1])
-        euro_all.ball_week_3 = int(balls[2])
-        euro_all.ball_week_4 = int(balls[3])
-        euro_all.ball_week_5 = int(balls[4])
-        euro_all.star_week_1 = int(stars[0])
-        euro_all.star_week_2 = int(stars[1])
-        session.add(euro_all)
-        session.commit()
-
-        win_results = WinResults()
-        win_results.game_date_id = game_to_get.id
-        # check if winner is None or empty
-        if len(winners) == 0:
-            logger.info('No winner')
-        else:
-            win_results.five_two_winners = winners.get('five_two', 0)[1]
-            win_results.five_two_money = winners.get('five_two', 0)[0]
-            win_results.five_one_winners = winners.get('five_one', 0)[1]
-            win_results.five_one_money = winners.get('five_one', 0)[0]
-            win_results.five_winners = winners.get('five', 0)[1]
-            win_results.five_money = winners.get('five', 0)[0]
-            win_results.four_two_winners = winners.get('four_two', 0)[1]
-            win_results.four_two_money = winners.get('four_two', 0)[0]
-            win_results.four_one_winners = winners.get('four_one', 0)[1]
-            win_results.four_one_money = winners.get('four_one', 0)[0]
-            win_results.four_winners = winners.get('four', 0)[1]
-            win_results.four_money = winners.get('four', 0)[0]
-            win_results.three_two_winners = winners.get('three_two', 0)[1]
-            win_results.three_two_money = winners.get('three_two', 0)[0]
-            win_results.three_one_winners = winners.get('three_one', 0)[1]
-            win_results.three_one_money = winners.get('three_one', 0)[0]
-            win_results.three_winners = winners.get('three', 0)[1]
-            win_results.three_money = winners.get('three', 0)[0]
-            win_results.two_two_winners = winners.get('two_two', 0)[1]
-            win_results.two_two_money = winners.get('two_two', 0)[0]
-            win_results.two_one_winners = winners.get('two_one', 0)[1]
-            win_results.two_one_money = winners.get('two_one', 0)[0]
-            win_results.one_two_winners = winners.get('one_two', 0)[1]
-            win_results.one_two_money = winners.get('one_two', 0)[0]
-        session.add(win_results)
-        session.commit()
-
-        for ball in balls:
-            unNumbers = UnionNumbers()
-            unNumbers.game_date_id = game_to_get.id
-            unNumbers.numbers = int(ball)
-            session.add(unNumbers)
+            session.add(GameDate(game_date=day))
             session.commit()
 
-        for star in stars:
-            unStars = UnionStars()
-            unStars.game_date_id = game_to_get.id
-            unStars.stars = int(star)
-            session.add(unStars)
+            # game_date_id
+            game_to_get = session.query(GameDate).filter(GameDate.game_date == day).first()
+
+            session.add(EuroStarNumbers(game_date_id=game_to_get.id, euro_numbers=balls, star_numbers=stars))
             session.commit()
 
-        session.close()
-        logger.info('Day:{0} Balls:{1} Star:{2} Million:{3} Winners:{4}'.format(day, balls, stars, million, winners))
+            # EuroAll
+            session.add(EuroAll(game_date_id=game_to_get.id, million=million if million is not None else 0,
+                                ball_week_1=int(balls[0]), ball_week_2=int(balls[1]), ball_week_3=int(balls[2]),
+                                ball_week_4=int(balls[3]), ball_week_5=int(balls[4]), star_week_1=int(stars[0]),
+                                star_week_2=int(stars[1])))
+            session.commit()
+
+            session.add(WinResults(game_date_id=game_to_get.id))
+            if len(winners) == 0:
+                logger.info('No winner')
+            else:
+                session.add(WinResults(game_date_id=game_to_get.id,
+                                       five_two_winners=winners.get('five_two', 0)[1],
+                                       five_two_money=winners.get('five_two', 0)[0],
+                                       five_one_winners=winners.get('five_one', 0)[1],
+                                       five_one_money=winners.get('five_one', 0)[0],
+                                       five_winners=winners.get('five', 0)[1],
+                                       five_money=winners.get('five', 0)[0],
+                                       four_two_winners=winners.get('four_two', 0)[1],
+                                       four_two_money=winners.get('four_two', 0)[0],
+                                       four_one_winners=winners.get('four_one', 0)[1],
+                                       four_one_money=winners.get('four_one', 0)[0],
+                                       four_winners=winners.get('four', 0)[1],
+                                       four_money=winners.get('four', 0)[0],
+                                       three_two_winners=winners.get('three_two', 0)[1],
+                                       three_two_money=winners.get('three_two', 0)[0],
+                                       three_one_winners=winners.get('three_one', 0)[1],
+                                       three_one_money=winners.get('three_one', 0)[0],
+                                       three_winners=winners.get('three', 0)[1],
+                                       three_money=winners.get('three', 0)[0],
+                                       two_two_winners=winners.get('two_two', 0)[1],
+                                       two_two_money=winners.get('two_two', 0)[0],
+                                       two_one_winners=winners.get('two_one', 0)[1],
+                                       two_one_money=winners.get('two_one', 0)[0],
+                                       one_two_winners=winners.get('one_two', 0)[1],
+                                       one_two_money=winners.get('one_two', 0)[0]))
+            session.commit()
+
+            all_balls = [
+                UnionNumbers(game_date_id=game_to_get.id, numbers=int(ball))
+                for ball in balls
+            ]
+            session.add_all(all_balls)
+            session.commit()
+
+            all_stars = [
+                UnionStars(game_date_id=game_to_get.id, stars=int(star))
+                for star in stars
+            ]
+            session.add_all(all_stars)
+            session.commit()
+
+            session.close()
+            logger.info(
+                'Day:{0} Balls:{1} Star:{2} Million:{3} Winners:{4}'.format(day, balls, stars, million, winners))
     except Exception as e:
         logger.error("Error inserting data for day {0}\nError: {1}".format(day, e))
         session.rollback()
@@ -169,7 +156,6 @@ def add_number(balls_and_star, _day):
 
 def get_euro_number():
     """Get euro number."""
-
     # begin euro millions is: 13-02-2004 / get (last_day + next_day) in database
     start_day = get_last_insert_day()  # '13-02-2004'
     today = date.today()
@@ -188,5 +174,6 @@ def get_euro_number():
                 add_number(balls_and_star, _day)
                 logger.info('Added number for day {}'.format(_day))
                 loop.update(1)
+    refresh_materialized_views()
     loop.set_description('Done')
     loop.close()

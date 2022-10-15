@@ -41,6 +41,7 @@ FROM
 INNER JOIN euro_all ON euro_all.game_date_id = euro_game_day.id
 INNER JOIN win_results ON win_results.game_date_id = euro_game_day.id;
 
+
 DROP VIEW IF EXISTS concat_all CASCADE;
 CREATE OR replace  VIEW concat_all
 AS
@@ -50,6 +51,7 @@ SELECT
     CONCAT(star_week_1, ' ', star_week_2) AS "Stars"
 FROM euro_all_info
 ORDER BY game_date DESC;
+
 
 -- Note: Unless you save your query, these tabs will NOT persist if you clear your cookies or change browsers.
 DROP VIEW IF EXISTS view_all_content CASCADE;
@@ -72,6 +74,7 @@ FROM euro_star_numbers
     INNER JOIN euro_all ON euro_all.game_date_id = euro_star_numbers.game_date_id
     INNER JOIN euro_game_day ON euro_game_day.id = euro_star_numbers.game_date_id
 ORDER BY euro_game_day.game_date DESC;
+
 
 DROP VIEW IF EXISTS view_union_number_star CASCADE;
 CREATE OR replace  VIEW view_union_number_star
