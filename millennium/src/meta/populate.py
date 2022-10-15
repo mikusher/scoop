@@ -96,7 +96,7 @@ def add_number(balls_and_star, _day):
                                 star_week_2=int(stars[1])))
             session.commit()
 
-            session.add(WinResults(game_date_id=game_to_get.id))
+            # session.add(WinResults(game_date_id=game_to_get.id))
             if len(winners) == 0:
                 logger.info('No winner')
             else:
