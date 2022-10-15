@@ -15,5 +15,14 @@ werkzeug~=2.0.3
 pyjwt~=2.4.0
 marshmallow~=3.12.2
 sqlalchemy_utils
+flask-cors
+flask-httpauth
+flask-mail
+flask-marshmallow
+flask-migrate
+gunicorn
+marshmallow-sqlalchemy
+flask-restplus
+superset-api-client
 impacket
 poetry-core

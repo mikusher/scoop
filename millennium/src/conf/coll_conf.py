@@ -1,6 +1,6 @@
 import logging
+import time
 from datetime import timedelta
-from turtle import delay
 from typing import List
 
 import requests
@@ -30,14 +30,13 @@ class CollectionsSatellite:
     def is_valid_day(day_check, loop) -> requests:
         """
         Check if the day is valid.
-        :param day_check:
         :return:
         """
         logger.info('Checking if the day is valid')
         base_url = '{0}/results/{1}#PrizePT'.format(GLOBAL_URL, day_check)
         logger.info('Base url: {}'.format(base_url))
         # Requests the numbers to URL and returns raw HTML
-        delay(10)
+        time.sleep(10)
         random_header = header.generate()
         page = requests.get(base_url, headers=random_header)
         logger.info('Requesting the page')
@@ -49,8 +48,6 @@ class CollectionsSatellite:
     def draws_days(start_dt, end_dt) -> List[str]:
         """
         Get the days of the draws.
-        :param start_dt:
-        :param end_dt:
         :return:
         """
         logger.info('Getting the days of the draws')

@@ -1,5 +1,5 @@
-DROP VIEW IF EXISTS euro_all_info CASCADE;
-CREATE OR replace  VIEW euro_all_info
+DROP VIEW IF EXISTS view_euro_all_info CASCADE;
+CREATE OR replace  VIEW view_euro_all_info
 AS
 SELECT
 	euro_game_day.id,
@@ -42,14 +42,14 @@ INNER JOIN euro_all ON euro_all.game_date_id = euro_game_day.id
 INNER JOIN win_results ON win_results.game_date_id = euro_game_day.id;
 
 
-DROP VIEW IF EXISTS concat_all CASCADE;
-CREATE OR replace  VIEW concat_all
+DROP VIEW IF EXISTS view_concat_all CASCADE;
+CREATE OR replace  VIEW view_concat_all
 AS
 SELECT
     game_date,
     CONCAT(ball_week_1, ' ', ball_week_2, ' ', ball_week_3, ' ', ball_week_4, ' ', ball_week_5) AS "Numbers",
     CONCAT(star_week_1, ' ', star_week_2) AS "Stars"
-FROM euro_all_info
+FROM view_euro_all_info
 ORDER BY game_date DESC;
 
 

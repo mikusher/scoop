@@ -24,3 +24,7 @@ silence:
 
 down:
 	docker-compose down -v
+
+stop:
+	docker-compose stop
+	docker-compose down -v

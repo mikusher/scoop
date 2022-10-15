@@ -1,5 +1,5 @@
 
-ARG PY_VER=3.8-slim
+ARG PY_VER=3.10-slim
 FROM python:${PY_VER} AS etl-py
 MAINTAINER Luis Amilcar Tavares <mikusher@hotmail.com>
 
@@ -25,7 +25,9 @@ COPY ../millennium/ /home/user/app/millennium
 
 
 RUN cd /home/user/app/millennium \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir -r requirements.txt \
+    && make all
+
 
 RUN chown -R "1000:1000" /home/user
 USER user

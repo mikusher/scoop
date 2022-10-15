@@ -54,7 +54,7 @@ services:
     container_name: etl_app
     user: user
     env_file: docker/config/etl.env
-    command: [ "python", "./millennium/Millennium.py", "millennium" ]
+    command: [ "python", "./millennium/Millennium.py"]
     build:
       context: .
       dockerfile: millennium/Dockerfile
@@ -69,18 +69,22 @@ services:
   #    ofelia.job-exec.etl-app.command: "pwd"
 
   db:
-    image: postgres:11-alpine
+    image: postgres:10.5
     container_name: db
     env_file: docker/config/postgres.env
     command: [ "postgres", "-c", "config_file=/etc/postgresql/postgresql.conf", "-c", "hba_file=/etc/postgresql/pg_hba.conf" ]
     ports:
       - "5432:5432"
-    restart: unless-stopped
+    restart: always
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
     volumes:
       - db_home:/var/lib/postgresql/data
       - ./docker/postgresqlconfig/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./docker/postgresqlconfig/pg_hba.conf:/etc/postgresql/pg_hba.conf
-      - ./docker/services/postgres/init-user-db.sql:/docker-entrypoint-initdb.d/init-user-db.sql
+      - ./docker/services/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   pgadmin:
     image: dpage/pgadmin4

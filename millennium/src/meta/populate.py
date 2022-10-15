@@ -174,6 +174,6 @@ def get_euro_number():
                 add_number(balls_and_star, _day)
                 logger.info('Added number for day {}'.format(_day))
                 loop.update(1)
-    refresh_materialized_views()
+                refresh_materialized_views()
     loop.set_description('Done')
     loop.close()
